@@ -168,43 +168,43 @@ app.post('/webhook/loopmessage-callback', async (req, res) => {
         
         // Handle different alert types
         switch (alert_type) {
-            case 'message_inbound':
-                logger.info('Inbound message received', { 
-                    requestId, 
-                    recipient,
-                    textLength: text?.length
+        case 'message_inbound':
+            logger.info('Inbound message received', { 
+                requestId, 
+                recipient,
+                textLength: text?.length
+            });
+                
+            // Respond with typing indicator
+            res.status(200).json(
+                loopmessageService.formatTypingResponse(3, true)
+            );
+                
+            // Process inbound message asynchronously
+            processInboundMessage(requestId, req.body).catch(error => {
+                logger.error('Error processing inbound message', {
+                    requestId,
+                    error: error.message
                 });
+            });
+            break;
                 
-                // Respond with typing indicator
-                res.status(200).json(
-                    loopmessageService.formatTypingResponse(3, true)
-                );
+        case 'message_sent':
+        case 'message_failed':
+        case 'message_timeout':
+            // Update message status in database
+            await Conversation.updateStatus(message_id, alert_type);
+            res.status(200).json({ success: true });
+            break;
                 
-                // Process inbound message asynchronously
-                processInboundMessage(requestId, req.body).catch(error => {
-                    logger.error('Error processing inbound message', {
-                        requestId,
-                        error: error.message
-                    });
-                });
-                break;
+        case 'message_scheduled':
+            await Conversation.updateStatus(message_id, 'scheduled');
+            res.status(200).json({ success: true });
+            break;
                 
-            case 'message_sent':
-            case 'message_failed':
-            case 'message_timeout':
-                // Update message status in database
-                await Conversation.updateStatus(message_id, alert_type);
-                res.status(200).json({ success: true });
-                break;
-                
-            case 'message_scheduled':
-                await Conversation.updateStatus(message_id, 'scheduled');
-                res.status(200).json({ success: true });
-                break;
-                
-            default:
-                // Acknowledge other webhooks
-                res.status(200).json({ success: true });
+        default:
+            // Acknowledge other webhooks
+            res.status(200).json({ success: true });
         }
         
     } catch (error) {
@@ -448,7 +448,7 @@ app.get('/api/logs', async (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
     logger.error('Unhandled error', {
         requestId: req.requestId,
         error: err.message,
@@ -473,10 +473,7 @@ app.use((req, res) => {
 async function startServer() {
     try {
         // Connect to database
-        await mongoose.connect(config.database.url, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        await mongoose.connect(config.database.url);
         
         logger.info('✅ Connected to MongoDB');
         
