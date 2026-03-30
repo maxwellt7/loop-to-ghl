@@ -80,7 +80,7 @@ class AIDecisionService {
             max_tokens: config.anthropic.maxTokens,
             messages: [
                 {
-                    role: "user",
+                    role: 'user',
                     content: `You are an AI assistant helping with customer engagement via iMessage.
 
 Contact Information:
@@ -96,8 +96,8 @@ ${context.length > 0 ? context.join('\n') : 'No additional context available'}
 
 Recent Conversation (most recent first):
 ${conversationHistory.length > 0 
-    ? conversationHistory.map((msg, idx) => `${idx + 1}. ${msg.direction.toUpperCase()}: ${msg.content}`).join('\n')
-    : 'No previous conversation'}
+        ? conversationHistory.map((msg, idx) => `${idx + 1}. ${msg.direction.toUpperCase()}: ${msg.content}`).join('\n')
+        : 'No previous conversation'}
 
 Based on this information, determine:
 1. Should we send a message? (yes/no)
@@ -134,7 +134,7 @@ Respond ONLY with a JSON object in this exact format:
             max_tokens: 512,
             messages: [
                 {
-                    role: "user",
+                    role: 'user',
                     content: `You are a helpful customer service AI assistant responding via iMessage.
 
 Contact Phone: ${contactPhone}
@@ -146,8 +146,8 @@ ${context.length > 0 ? context.join('\n') : 'No additional context available'}
 
 Recent Conversation (most recent first):
 ${conversationHistory.slice(0, 5).map((msg, idx) => 
-    `${idx + 1}. ${msg.direction.toUpperCase()}: ${msg.content}`
-).join('\n')}
+        `${idx + 1}. ${msg.direction.toUpperCase()}: ${msg.content}`
+    ).join('\n')}
 
 Generate a helpful, friendly, and professional response to the customer's message.
 Keep it concise and conversational (suitable for iMessage - aim for 1-3 sentences).
@@ -263,7 +263,7 @@ Respond with ONLY the message text, no JSON or formatting.`
             });
 
             // Return fallback response
-            return "Thank you for your message. We'll get back to you shortly!";
+            return 'Thank you for your message. We\'ll get back to you shortly!';
         }
     }
 

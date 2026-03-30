@@ -1,7 +1,6 @@
 const axios = require('axios');
 const config = require('../config');
 const logger = require('../utils/logger');
-const { retryWithBackoff } = require('../utils/helpers');
 
 class LoopMessageService {
     constructor() {

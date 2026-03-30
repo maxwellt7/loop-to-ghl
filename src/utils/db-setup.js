@@ -5,10 +5,7 @@ const logger = require('./logger');
 async function setupDatabase() {
     try {
         // Connect to MongoDB
-        await mongoose.connect(config.database.url, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        await mongoose.connect(config.database.url);
         
         logger.info('✅ Connected to MongoDB');
         
